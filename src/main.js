@@ -1,45 +1,45 @@
-const PassiveCoolingStrategy = require('./PassiveCoolingStrategy');
-const HiActiveCoolingStrategy = require('./HiActiveCoolingStrategy');
-const MedActiveCoolingStrategy = require('./MedActiveCoolingStrategy');
-const ControllerAlertStrategy = require('./ControllerAlertStrategy');
-const EmailAlertStrategy = require('./EmailAlertStrategy');
+const PassiveCooling = require('./PassiveCooling');
+const HiActiveCooling = require('./HiActiveCooling');
+const MedActiveCooling = require('./MedActiveCooling');
+const ControllerAlert = require('./ControllerAlert');
+const EmailAlert = require('./EmailAlert');
 const CoolingContext = require('./CoolingContext');
 const AlertContext = require('./AlertContext');
 
-function getCoolingStrategy(coolingType) {
+function getCooling(coolingType) {
   const strategies = {
-    PASSIVE_COOLING: new PassiveCoolingStrategy(),
-    HI_ACTIVE_COOLING: new HiActiveCoolingStrategy(),
-    MED_ACTIVE_COOLING: new MedActiveCoolingStrategy(),
+    PASSIVE_COOLING: new PassiveCooling(),
+    HI_ACTIVE_COOLING: new HiActiveCooling(),
+    MED_ACTIVE_COOLING: new MedActiveCooling(),
   };
 
   return strategies[coolingType] || null;
 }
 
-function getAlertStrategy(alertTarget) {
+function getAlert(alertTarget) {
   const strategies = {
-    TO_CONTROLLER: new ControllerAlertStrategy(),
-    TO_EMAIL: new EmailAlertStrategy(),
+    TO_CONTROLLER: new ControllerAlert(),
+    TO_EMAIL: new EmailAlert(),
   };
 
   return strategies[alertTarget] || null;
 }
 
 function checkAndAlert(alertTarget, batteryChar, temperatureInC) {
-  const coolingStrategy = getCoolingStrategy(batteryChar.coolingType);
-  if (!coolingStrategy) {
+  const cooling = getCooling(batteryChar.coolingType);
+  if (!cooling) {
     throw new Error('Invalid cooling type');
   }
 
-  const coolingContext = new CoolingContext(coolingStrategy);
+  const coolingContext = new CoolingContext(cooling);
   const breachType = coolingContext.classifyTemperature(temperatureInC);
 
-  const alertStrategy = getAlertStrategy(alertTarget);
-  if (!alertStrategy) {
+  const alert = getAlert(alertTarget);
+  if (!alert) {
     throw new Error('Invalid alert target');
   }
 
-  const alertContext = new AlertContext(alertStrategy);
+  const alertContext = new AlertContext(alert);
   alertContext.sendAlert(breachType);
 }
 
