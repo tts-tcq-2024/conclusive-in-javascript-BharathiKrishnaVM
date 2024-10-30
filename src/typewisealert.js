@@ -1,39 +1,39 @@
-const PassiveCoolingStrategy = require('./cooling/PassiveCoolingStrategy');
-const HiActiveCoolingStrategy = require('./cooling/HiActiveCoolingStrategy');
-const MedActiveCoolingStrategy = require('./cooling/MedActiveCoolingStrategy');
-const ControllerAlertStrategy = require('./alert/ControllerAlertStrategy');
-const EmailAlertStrategy = require('./alert/EmailAlertStrategy');
+const PassiveCooling = require('./cooling/PassiveCooling');
+const HiActiveCooling = require('./cooling/HiActiveCooling');
+const MedActiveCooling = require('./cooling/MedActiveCooling');
+const ControllerAlert = require('./alert/ControllerAlert');
+const EmailAlert = require('./alert/EmailAlert');
 
 const coolingStrategies = {
-  'PASSIVE_COOLING': PassiveCoolingStrategy,
-  'HI_ACTIVE_COOLING': HiActiveCoolingStrategy,
-  'MED_ACTIVE_COOLING': MedActiveCoolingStrategy,
+  'PASSIVE_COOLING': PassiveCooling,
+  'HI_ACTIVE_COOLING': HiActiveCooling,
+  'MED_ACTIVE_COOLING': MedActiveCooling,
 };
 
-function getCoolingStrategy(coolingType) {
-  const StrategyClass = coolingStrategies[coolingType];
-  if (!StrategyClass) {
+function getCooling(coolingType) {
+  const Class = coolingStrategies[coolingType];
+  if (!Class) {
     throw new Error('Unknown cooling type');
   }
-  return new StrategyClass();
+  return new Class();
 }
 
-function getAlertStrategy(alertTarget) {
+function getAlert(alertTarget) {
   switch(alertTarget) {
     case 'TO_CONTROLLER':
-      return new ControllerAlertStrategy();
+      return new ControllerAlert();
     case 'TO_EMAIL':
-      return new EmailAlertStrategy();
+      return new EmailAlert();
     default:
       throw new Error('Unknown alert target');
   }
 }
 
 function checkAndAlert(alertTarget, batteryChar, temperatureInC) {
-  const coolingStrategy = getCoolingStrategy(batteryChar.coolingType);
-  const breachType = coolingStrategy.classifyTemperature(temperatureInC);
-  const alertStrategy = getAlertStrategy(alertTarget);
-  alertStrategy.sendAlert(breachType);
+  const cooling = getCooling(batteryChar.coolingType);
+  const breachType = cooling.classifyTemperature(temperatureInC);
+  const alert = getAlert(alertTarget);
+  alert.sendAlert(breachType);
 }
 
 module.exports = {
