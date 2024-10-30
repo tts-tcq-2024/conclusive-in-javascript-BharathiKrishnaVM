@@ -1,4 +1,4 @@
-class CoolingTypeStrategy {
+class CoolingType {
   constructor(lowerLimit, upperLimit) {
     this.lowerLimit = lowerLimit;
     this.upperLimit = upperLimit;
@@ -19,4 +19,4 @@ class CoolingTypeStrategy {
   }
 }
 
-module.exports = CoolingTypeStrategy;
+module.exports = CoolingType;
